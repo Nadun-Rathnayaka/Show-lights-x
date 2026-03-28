@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concert Light Show</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #FFFFFF;
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+        
+        body.beat {
+            transition: background-color 0.05s ease;
+        }
+        
+        .status {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            opacity: 0.7;
+            z-index: 1000;
+        }
+        
+        .status.connected {
+            background-color: rgba(0, 200, 0, 0.3);
+            color: #004d00;
+        }
+        
+        .status.disconnected {
+            background-color: rgba(200, 0, 0, 0.3);
+            color: #4d0000;
+        }
+
+        .start-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .start-photo {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .start-fallback {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            background: linear-gradient(135deg, #111, #333);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .start-note {
+            position: relative;
+            z-index: 1;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.55);
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .start-overlay.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="start-overlay" id="startOverlay">
+        <img
+            id="startPhoto"
+            class="start-photo"
+            src="Start.PNG"
+            alt="Startup Photo"
+        >
+        <div class="start-fallback" id="startFallback">Place your startup image as start-photo.jpg</div>
+        <div class="start-note">Waiting for admin to start the show</div>
+    </div>
+
+    <div class="status disconnected">Connecting...</div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const statusElement = document.querySelector('.status');
+        const startOverlay = document.getElementById('startOverlay');
+        const startPhoto = document.getElementById('startPhoto');
+        const startFallback = document.getElementById('startFallback');
+        let showStarted = false;
+        let pendingColor = '#FFFFFF';
+
+        startPhoto.addEventListener('error', () => {
+            startPhoto.style.display = 'none';
+            startFallback.style.display = 'flex';
+        });
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            statusElement.textContent = 'Connected';
+            statusElement.className = 'status connected';
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            statusElement.textContent = 'Disconnected';
+            statusElement.className = 'status disconnected';
+        });
+        
+        socket.on('colorChange', (color) => {
+            pendingColor = color;
+            if (!showStarted) return;
+            document.body.style.backgroundColor = color;
+        });
+
+        socket.on('showState', (started) => {
+            showStarted = Boolean(started);
+
+            if (showStarted) {
+                startOverlay.classList.add('hidden');
+                document.body.style.backgroundColor = pendingColor;
+            } else {
+                startOverlay.classList.remove('hidden');
+            }
+        });
+        
+        socket.on('beatEffect', (data) => {
+            if (!showStarted) return;
+            const { color, duration } = data;
+            document.body.classList.add('beat');
+            document.body.style.backgroundColor = color;
+            
+            setTimeout(() => {
+                document.body.classList.remove('beat');
+            }, duration || 100);
+        });
+        
+        // Hide status indicator after 3 seconds of being connected
+        socket.on('connect', () => {
+            setTimeout(() => {
+                if (socket.connected) {
+                    statusElement.style.opacity = '0';
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

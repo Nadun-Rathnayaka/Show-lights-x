@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concert Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ccc;
+        }
+        
+        .status-dot.connected {
+            background-color: #00c853;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .color-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .custom-color {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .color-picker {
+            width: 80px;
+            height: 50px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff1744 0%, #ff5252 100%);
+            color: white;
+        }
+
+        .show-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .show-status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        .beat-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .beat-btn {
+            padding: 25px;
+            border: none;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .beat-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .current-preview {
+            width: 100%;
+            height: 100px;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Concert Control Panel</h1>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="connectionDot"></div>
+                <span id="connectionStatus">Connecting...</span>
+            </div>
+            <div class="status-item">
+                <strong>Connected Devices:</strong>
+                <span id="clientCount">0</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Show Start Control</h2>
+            <div class="show-controls">
+                <button class="btn btn-success" onclick="startShow()">Start Show</button>
+                <button class="btn btn-danger" onclick="resetShow()">Reset To Start Photo</button>
+            </div>
+            <div class="show-status" id="showStatus">Show status: Waiting to start</div>
+        </div>
+
+        <div class="section">
+            <h2>Preset Colors</h2>
+            <div class="color-grid">
+                <button class="color-btn" style="background-color: #FFFFFF; border: 2px solid #ddd;" onclick="changeColor('#FFFFFF')">White</button>
+                <button class="color-btn" style="background-color: #FF0000;" onclick="changeColor('#FF0000')">Red</button>
+                <button class="color-btn" style="background-color: #00FF00;" onclick="changeColor('#00FF00')">Green</button>
+                <button class="color-btn" style="background-color: #0000FF;" onclick="changeColor('#0000FF')">Blue</button>
+                <button class="color-btn" style="background-color: #FFFF00;" onclick="changeColor('#FFFF00')">Yellow</button>
+                <button class="color-btn" style="background-color: #FF00FF;" onclick="changeColor('#FF00FF')">Magenta</button>
+                <button class="color-btn" style="background-color: #00FFFF;" onclick="changeColor('#00FFFF')">Cyan</button>
+                <button class="color-btn" style="background-color: #FFA500;" onclick="changeColor('#FFA500')">Orange</button>
+                <button class="color-btn" style="background-color: #800080;" onclick="changeColor('#800080')">Purple</button>
+                <button class="color-btn" style="background-color: #FFC0CB;" onclick="changeColor('#FFC0CB')">Pink</button>
+                <button class="color-btn" style="background-color: #000000; color: white;" onclick="changeColor('#000000')">Black</button>
+                <button class="color-btn" style="background-color: #808080;" onclick="changeColor('#808080')">Gray</button>
+            </div>
+            
+            <div class="custom-color">
+                <input type="color" id="customColor" class="color-picker" value="#FFFFFF">
+                <button class="btn btn-primary" onclick="changeCustomColor()">Apply Custom Color</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Beat Effects (Quick Flash)</h2>
+            <div class="beat-controls">
+                <button class="beat-btn" style="background-color: #FF0000;" onclick="triggerBeat('#FF0000')">Red Beat</button>
+                <button class="beat-btn" style="background-color: #00FF00;" onclick="triggerBeat('#00FF00')">Green Beat</button>
+                <button class="beat-btn" style="background-color: #0000FF;" onclick="triggerBeat('#0000FF')">Blue Beat</button>
+                <button class="beat-btn" style="background-color: #FFFF00; color: #333;" onclick="triggerBeat('#FFFF00')">Yellow Beat</button>
+                <button class="beat-btn" style="background-color: #FF00FF;" onclick="triggerBeat('#FF00FF')">Magenta Beat</button>
+                <button class="beat-btn" style="background-color: #00FFFF; color: #333;" onclick="triggerBeat('#00FFFF')">Cyan Beat</button>
+                <button class="beat-btn" style="background-color: #FFFFFF; color: #333; border: 2px solid #ddd;" onclick="triggerBeat('#FFFFFF')">White Beat</button>
+                <button class="beat-btn" style="background-color: #000000;" onclick="triggerBeat('#000000')">Black Beat</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Current Color Preview</h2>
+            <div class="current-preview" id="currentPreview"></div>
+        </div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const connectionDot = document.getElementById('connectionDot');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const clientCount = document.getElementById('clientCount');
+        const currentPreview = document.getElementById('currentPreview');
+        
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            connectionDot.classList.add('connected');
+            connectionStatus.textContent = 'Connected';
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            connectionDot.classList.remove('connected');
+            connectionStatus.textContent = 'Disconnected';
+        });
+        
+        socket.on('clientCount', (count) => {
+            clientCount.textContent = count;
+        });
+        
+        socket.on('colorChange', (color) => {
+            currentPreview.style.backgroundColor = color;
+        });
+
+        socket.on('showState', (started) => {
+            const showStatus = document.getElementById('showStatus');
+            showStatus.textContent = started
+                ? 'Show status: Running'
+                : 'Show status: Waiting to start';
+        });
+        
+        function changeColor(color) {
+            socket.emit('changeColor', color);
+            currentPreview.style.backgroundColor = color;
+        }
+        
+        function changeCustomColor() {
+            const color = document.getElementById('customColor').value;
+            changeColor(color);
+        }
+        
+        function triggerBeat(color) {
+            socket.emit('beat', { color: color, duration: 100 });
+        }
+
+        function startShow() {
+            socket.emit('startShow');
+        }
+
+        function resetShow() {
+            socket.emit('resetShow');
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'w') changeColor('#FFFFFF');
+            if (e.key === 'r') changeColor('#FF0000');
+            if (e.key === 'g') changeColor('#00FF00');
+            if (e.key === 'b') changeColor('#0000FF');
+            if (e.key === 'y') changeColor('#FFFF00');
+            if (e.key === 'k') changeColor('#000000');
+        });
+    </script>
+</body>
+</html>
