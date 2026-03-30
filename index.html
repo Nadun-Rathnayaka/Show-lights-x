@@ -155,7 +155,20 @@
     
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        function createSocketClient() {
+            if (typeof window.io === 'function') {
+                return window.io();
+            }
+
+            console.warn('Socket.IO client not available. Audience page is in static mode.');
+            return {
+                connected: false,
+                on: () => {},
+                emit: () => {}
+            };
+        }
+
+        const socket = createSocketClient();
         const statusElement = document.querySelector('.status');
         const startOverlay = document.getElementById('startOverlay');
         const startPhoto = document.getElementById('startPhoto');

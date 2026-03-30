@@ -340,7 +340,20 @@
     
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        function createSocketClient() {
+            if (typeof window.io === 'function') {
+                return window.io();
+            }
+
+            console.warn('Socket.IO client not available. Running in local-only UI mode.');
+            return {
+                connected: false,
+                on: () => {},
+                emit: () => {}
+            };
+        }
+
+        const socket = createSocketClient();
         const connectionDot = document.getElementById('connectionDot');
         const connectionStatus = document.getElementById('connectionStatus');
         const clientCount = document.getElementById('clientCount');
