@@ -869,10 +869,32 @@
             return constraints;
         }
 
+        async function unlockAudioDeviceLabels() {
+            try {
+                const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                tempStream.getTracks().forEach(track => track.stop());
+                return true;
+            } catch (error) {
+                console.warn('Audio permission not granted while refreshing device labels:', error);
+                return false;
+            }
+        }
+
         async function refreshAudioInputDevices(preserveSelection = true) {
             try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const audioInputs = devices.filter(device => device.kind === 'audioinput');
+                let devices = await navigator.mediaDevices.enumerateDevices();
+                let audioInputs = devices.filter(device => device.kind === 'audioinput');
+
+                // Browsers often hide labels until permission is granted; only prompt on manual refresh.
+                const allLabelsHidden = audioInputs.length > 0 && audioInputs.every(device => !device.label);
+                if (!preserveSelection && allLabelsHidden) {
+                    const unlocked = await unlockAudioDeviceLabels();
+                    if (unlocked) {
+                        devices = await navigator.mediaDevices.enumerateDevices();
+                        audioInputs = devices.filter(device => device.kind === 'audioinput');
+                    }
+                }
+
                 const preferredDevice = preserveSelection
                     ? (activeInputDeviceId || audioInputSelect.value || '')
                     : (audioInputSelect.value || activeInputDeviceId || '');
