@@ -16,6 +16,11 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.25s ease;
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
         
         .container {
@@ -25,12 +30,23 @@
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        body.dark .container {
+            background: #0b1220;
+            color: #e2e8f0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
         }
         
         h1 {
             color: #333;
             margin-bottom: 10px;
             text-align: center;
+        }
+
+        body.dark h1 {
+            color: #f8fafc;
         }
         
         .status-bar {
@@ -41,6 +57,12 @@
             background: #f5f5f5;
             border-radius: 10px;
             margin-bottom: 30px;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        body.dark .status-bar {
+            background: #111c31;
         }
         
         .status-item {
@@ -48,12 +70,24 @@
             align-items: center;
             gap: 10px;
         }
+
+        .status-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
         
         .status-dot {
             width: 12px;
             height: 12px;
             border-radius: 50%;
             background-color: #ccc;
+        }
+
+        body.dark .status-dot {
+            background-color: #4b5563;
         }
         
         .status-dot.connected {
@@ -74,6 +108,11 @@
             color: #555;
             margin-bottom: 15px;
             font-size: 18px;
+        }
+
+        body.dark .section h2,
+        body.dark .show-status {
+            color: #cbd5e1;
         }
         
         .color-grid {
@@ -192,6 +231,41 @@
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease;
         }
+
+        body.dark .current-preview {
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+
+        .theme-toggle {
+            padding: 10px 14px;
+            border: 2px solid #667eea;
+            background: #fff;
+            color: #2c3e90;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        body.dark .theme-toggle {
+            background: #1e293b;
+            border-color: #60a5fa;
+            color: #dbeafe;
+        }
+
+        @media (max-width: 700px) {
+            .status-actions {
+                margin-left: 0;
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
     </style>
 </head>
 <body>
@@ -203,9 +277,12 @@
                 <div class="status-dot" id="connectionDot"></div>
                 <span id="connectionStatus">Connecting...</span>
             </div>
-            <div class="status-item">
-                <strong>Connected Devices:</strong>
-                <span id="clientCount">0</span>
+            <div class="status-actions">
+                <div class="status-item">
+                    <strong>Connected Devices:</strong>
+                    <span id="clientCount">0</span>
+                </div>
+                <button class="theme-toggle" id="themeToggle" type="button">Dark Mode</button>
             </div>
         </div>
         
@@ -268,6 +345,29 @@
         const connectionStatus = document.getElementById('connectionStatus');
         const clientCount = document.getElementById('clientCount');
         const currentPreview = document.getElementById('currentPreview');
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const THEME_STORAGE_KEY = 'dhaaraControlTheme';
+
+        function applyTheme(theme) {
+            const isDark = theme === 'dark';
+            document.body.classList.toggle('dark', isDark);
+            themeToggleBtn.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        }
+
+        function toggleTheme() {
+            const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+            localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+            applyTheme(nextTheme);
+        }
+
+        themeToggleBtn.addEventListener('click', toggleTheme);
+
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme === 'dark' || savedTheme === 'light') {
+            applyTheme(savedTheme);
+        } else {
+            applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        }
         
         socket.on('connect', () => {
             console.log('Connected to server');

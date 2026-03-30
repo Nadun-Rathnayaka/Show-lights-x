@@ -16,6 +16,11 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.25s ease;
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
         
         .container {
@@ -25,12 +30,23 @@
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        body.dark .container {
+            background: #0b1220;
+            color: #e2e8f0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
         }
         
         h1 {
             color: #333;
             margin-bottom: 10px;
             text-align: center;
+        }
+
+        body.dark h1 {
+            color: #f8fafc;
         }
         
         .status-bar {
@@ -41,6 +57,12 @@
             background: #f5f5f5;
             border-radius: 10px;
             margin-bottom: 30px;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        body.dark .status-bar {
+            background: #111c31;
         }
         
         .status-item {
@@ -48,12 +70,24 @@
             align-items: center;
             gap: 10px;
         }
+
+        .status-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
         
         .status-dot {
             width: 12px;
             height: 12px;
             border-radius: 50%;
             background-color: #ccc;
+        }
+
+        body.dark .status-dot {
+            background-color: #4b5563;
         }
         
         .status-dot.connected {
@@ -77,11 +111,23 @@
             background: #f9f9f9;
             border-radius: 15px;
         }
+
+        body.dark .section {
+            background: #111c31;
+        }
         
         .section h2 {
             color: #555;
             margin-bottom: 15px;
             font-size: 18px;
+        }
+
+        body.dark .section h2,
+        body.dark .setting-item label,
+        body.dark .show-status,
+        body.dark .info-box p,
+        body.dark small {
+            color: #cbd5e1;
         }
         
         .audio-controls {
@@ -182,6 +228,14 @@
             font-size: 14px;
         }
 
+        body.dark input[type="number"],
+        body.dark .preset-input,
+        body.dark .preset-select {
+            background: #0b1220;
+            border-color: #334155;
+            color: #e2e8f0;
+        }
+
         .cooldown-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -197,6 +251,16 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+        }
+
+        body.dark .cooldown-btn,
+        body.dark .sensitivity-btn,
+        body.dark .mode-btn,
+        body.dark .preset-delete-btn,
+        body.dark .btn-secondary {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-color: #334155;
         }
 
         .cooldown-btn:hover {
@@ -241,6 +305,36 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+
+        .custom-color-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .custom-color-picker {
+            width: 68px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .audio-device-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .audio-device-select {
+            min-width: 260px;
+            flex: 1;
+            max-width: 440px;
+        }
         
         .color-chip {
             width: 40px;
@@ -266,6 +360,11 @@
             border: 1px solid #ddd;
             border-radius: 10px;
             background: #fff;
+        }
+
+        body.dark .preset-manager {
+            border-color: #334155;
+            background: #0f172a;
         }
 
         .preset-row {
@@ -314,6 +413,11 @@
             font-size: 13px;
         }
 
+        body.dark .preset-empty,
+        body.dark .saved-preset-count {
+            color: #94a3b8;
+        }
+
         .saved-presets-list {
             display: flex;
             flex-direction: column;
@@ -332,6 +436,11 @@
             background: #fafafa;
             cursor: pointer;
             transition: all 0.2s;
+        }
+
+        body.dark .saved-preset-card {
+            border-color: #334155;
+            background: #1e293b;
         }
 
         .saved-preset-card:hover {
@@ -358,6 +467,10 @@
             color: #333;
             word-break: break-word;
             min-width: 130px;
+        }
+
+        body.dark .saved-preset-title {
+            color: #e2e8f0;
         }
 
         .preset-delete-btn {
@@ -389,6 +502,11 @@
             border-left: 4px solid #2196f3;
             border-radius: 5px;
             margin-top: 15px;
+        }
+
+        body.dark .info-box {
+            background: #0f1d33;
+            border-left-color: #38bdf8;
         }
         
         .info-box p {
@@ -432,6 +550,37 @@
             color: #555;
             font-weight: 600;
         }
+
+        .theme-toggle {
+            padding: 10px 14px;
+            border: 2px solid #667eea;
+            background: #fff;
+            color: #2c3e90;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        body.dark .theme-toggle {
+            background: #1e293b;
+            border-color: #60a5fa;
+            color: #dbeafe;
+        }
+
+        @media (max-width: 700px) {
+            .status-actions {
+                margin-left: 0;
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
     </style>
 </head>
 <body>
@@ -447,9 +596,12 @@
                 <div class="status-dot" id="autoDot"></div>
                 <span id="autoStatus">Auto: Off</span>
             </div>
-            <div class="status-item">
-                <strong>Connected Devices:</strong>
-                <span id="clientCount">0</span>
+            <div class="status-actions">
+                <div class="status-item">
+                    <strong>Connected Devices:</strong>
+                    <span id="clientCount">0</span>
+                </div>
+                <button class="theme-toggle" id="themeToggle" type="button">Dark Mode</button>
             </div>
         </div>
         
@@ -522,6 +674,17 @@
                     <input type="number" id="flashDuration" min="50" max="5000" value="100" step="50">
                     <small>How long each flash lasts</small>
                 </div>
+
+                <div class="setting-item">
+                    <label>Audio Input Device:</label>
+                    <div class="audio-device-row">
+                        <select id="audioInputDevice" class="preset-select audio-device-select">
+                            <option value="">Default System Input</option>
+                        </select>
+                        <button class="btn btn-secondary" type="button" onclick="refreshAudioInputDevices(false)">Refresh Devices</button>
+                    </div>
+                    <small>Choose your sound card/loopback input for Ableton routing</small>
+                </div>
             </div>
             
             <div class="setting-item" style="margin-top: 20px;">
@@ -535,6 +698,11 @@
                     <div class="color-chip selected" style="background: #00FFFF;" data-color="#00FFFF"></div>
                     <div class="color-chip" style="background: #FFA500;" data-color="#FFA500"></div>
                     <div class="color-chip" style="background: #FFFFFF; border: 1px solid #ddd;" data-color="#FFFFFF"></div>
+                </div>
+                <div class="custom-color-row">
+                    <input type="color" id="customBeatColor" class="custom-color-picker" value="#8B5CF6">
+                    <button class="btn btn-secondary" type="button" onclick="addCustomBeatColor()">Add Color To Palette</button>
+                    <button class="btn btn-danger" type="button" onclick="deleteSelectedBeatColors()">Delete Selected Colors</button>
                 </div>
                 <small>System randomly picks from selected colors on each beat</small>
 
@@ -574,28 +742,171 @@
         let source;
         let audioElement;
         let animationId;
+        let activeStream = null;
         let isDetecting = false;
         let lastBeatTime = 0;
-        let beatThreshold = 50;
         let beatCooldown = 250;
+        let detectorSensitivity = 50;
+        let previousBassAverage = 0;
+        const bassHistory = [];
+        const BASS_HISTORY_SIZE = 45;
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const THEME_STORAGE_KEY = 'dhaaraControlTheme';
         const PRESET_STORAGE_KEY = 'dhaaraBeatColorPresets';
+        const AUTO_SETTINGS_STORAGE_KEY = 'dhaaraAutoBeatSettings';
         let savedPresets = [];
+
+        function applyTheme(theme) {
+            const isDark = theme === 'dark';
+            document.body.classList.toggle('dark', isDark);
+            themeToggleBtn.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        }
+
+        function toggleTheme() {
+            const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+            localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+            applyTheme(nextTheme);
+        }
+
+        themeToggleBtn.addEventListener('click', toggleTheme);
+
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+        if (savedTheme === 'dark' || savedTheme === 'light') {
+            applyTheme(savedTheme);
+        } else {
+            applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        }
         
         // Color management
-        const colorChips = document.querySelectorAll('.color-chip');
-        colorChips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                chip.classList.toggle('selected');
-                renderPresetPreview(getExplicitSelectedColors());
-            });
+        const colorSelect = document.getElementById('colorSelect');
+        colorSelect.addEventListener('click', (event) => {
+            const chip = event.target.closest('.color-chip');
+            if (!chip) return;
+
+            chip.classList.toggle('selected');
+            renderPresetPreview(getExplicitSelectedColors());
         });
 
         const presetNameInput = document.getElementById('presetName');
         const presetPreview = document.getElementById('presetPreview');
         const savedPresetList = document.getElementById('savedPresetList');
+        const audioInputSelect = document.getElementById('audioInputDevice');
+        const flashDurationInput = document.getElementById('flashDuration');
         const cooldownButtons = document.querySelectorAll('.cooldown-btn');
         const sensitivityButtons = document.querySelectorAll('.sensitivity-btn');
         let selectedPresetIndex = -1;
+        let activeInputDeviceId = '';
+
+        function getAutoSettings() {
+            return {
+                sensitivity: detectorSensitivity,
+                cooldown: beatCooldown,
+                flashDuration: parseInt(flashDurationInput.value, 10) || 100,
+                inputDeviceId: activeInputDeviceId || ''
+            };
+        }
+
+        function saveAutoSettings() {
+            localStorage.setItem(AUTO_SETTINGS_STORAGE_KEY, JSON.stringify(getAutoSettings()));
+        }
+
+        function getSensitivityLabel(value) {
+            const target = String(value);
+            const matchedButton = Array.from(sensitivityButtons).find(button => button.dataset.value === target);
+            return matchedButton ? matchedButton.dataset.label : `Custom (${value})`;
+        }
+
+        function loadAutoSettings() {
+            try {
+                const raw = localStorage.getItem(AUTO_SETTINGS_STORAGE_KEY);
+                if (!raw) return;
+
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') return;
+
+                const sensitivityValue = Number(parsed.sensitivity);
+                const cooldownValue = Number(parsed.cooldown);
+                const flashDurationValue = Number(parsed.flashDuration);
+
+                if (!Number.isNaN(sensitivityValue)) {
+                    updateSensitivity(sensitivityValue, getSensitivityLabel(sensitivityValue));
+                }
+
+                if (!Number.isNaN(cooldownValue)) {
+                    updateCooldown(cooldownValue);
+                }
+
+                if (!Number.isNaN(flashDurationValue) && flashDurationValue >= 50 && flashDurationValue <= 5000) {
+                    flashDurationInput.value = String(flashDurationValue);
+                }
+
+                if (typeof parsed.inputDeviceId === 'string') {
+                    activeInputDeviceId = parsed.inputDeviceId;
+                }
+            } catch (error) {
+                console.error('Failed to load auto beat settings:', error);
+            }
+        }
+
+        function buildAudioInputConstraints() {
+            const constraints = {
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false,
+                channelCount: 1
+            };
+
+            if (activeInputDeviceId) {
+                constraints.deviceId = { exact: activeInputDeviceId };
+            }
+
+            return constraints;
+        }
+
+        async function refreshAudioInputDevices(preserveSelection = true) {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const audioInputs = devices.filter(device => device.kind === 'audioinput');
+                const preferredDevice = preserveSelection
+                    ? (activeInputDeviceId || audioInputSelect.value || '')
+                    : (audioInputSelect.value || activeInputDeviceId || '');
+
+                audioInputSelect.innerHTML = '';
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Default System Input';
+                audioInputSelect.appendChild(defaultOption);
+
+                audioInputs.forEach((device, index) => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.textContent = device.label || `Audio Input ${index + 1}`;
+                    audioInputSelect.appendChild(option);
+                });
+
+                const hasPreferredDevice = audioInputs.some(device => device.deviceId === preferredDevice);
+                const selectedValue = hasPreferredDevice ? preferredDevice : '';
+                audioInputSelect.value = selectedValue;
+                activeInputDeviceId = selectedValue;
+                saveAutoSettings();
+            } catch (error) {
+                console.error('Failed to enumerate audio devices:', error);
+            }
+        }
+
+        audioInputSelect.addEventListener('change', () => {
+            activeInputDeviceId = audioInputSelect.value;
+            saveAutoSettings();
+        });
+
+        flashDurationInput.addEventListener('change', saveAutoSettings);
+
+        if (navigator.mediaDevices && typeof navigator.mediaDevices.addEventListener === 'function') {
+            navigator.mediaDevices.addEventListener('devicechange', () => {
+                refreshAudioInputDevices(true);
+            });
+        }
 
         cooldownButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -612,6 +923,82 @@
         function getSelectedColors() {
             const selected = getExplicitSelectedColors();
             return selected.length > 0 ? selected : ['#FF0000', '#0000FF', '#00FF00'];
+        }
+
+        function getAllColorChips() {
+            return Array.from(document.querySelectorAll('.color-chip'));
+        }
+
+        function normalizeHex(color) {
+            return String(color || '').trim().toUpperCase();
+        }
+
+        function isLightColor(hexColor) {
+            const normalized = normalizeHex(hexColor).replace('#', '');
+            if (normalized.length !== 6) return false;
+
+            const r = parseInt(normalized.slice(0, 2), 16);
+            const g = parseInt(normalized.slice(2, 4), 16);
+            const b = parseInt(normalized.slice(4, 6), 16);
+
+            if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) return false;
+
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 190;
+        }
+
+        function addColorChip(color, isSelected = true) {
+            const normalizedColor = normalizeHex(color);
+            if (!/^#[0-9A-F]{6}$/.test(normalizedColor)) {
+                return null;
+            }
+
+            const existing = getAllColorChips().find(
+                chip => normalizeHex(chip.dataset.color) === normalizedColor
+            );
+
+            if (existing) {
+                if (isSelected) {
+                    existing.classList.add('selected');
+                }
+                return existing;
+            }
+
+            const chip = document.createElement('div');
+            chip.className = `color-chip${isSelected ? ' selected' : ''}`;
+            chip.dataset.color = normalizedColor;
+            chip.style.background = normalizedColor;
+            if (isLightColor(normalizedColor)) {
+                chip.style.border = '1px solid #ddd';
+            }
+
+            colorSelect.appendChild(chip);
+            return chip;
+        }
+
+        function addCustomBeatColor() {
+            const picker = document.getElementById('customBeatColor');
+            const color = normalizeHex(picker.value);
+            const addedChip = addColorChip(color, true);
+
+            if (!addedChip) {
+                alert('Please pick a valid color.');
+                return;
+            }
+
+            renderPresetPreview(getExplicitSelectedColors());
+        }
+
+        function deleteSelectedBeatColors() {
+            const selectedChips = getAllColorChips().filter(chip => chip.classList.contains('selected'));
+
+            if (selectedChips.length === 0) {
+                alert('Select one or more colors to delete.');
+                return;
+            }
+
+            selectedChips.forEach(chip => chip.remove());
+            renderPresetPreview(getExplicitSelectedColors());
         }
 
         function getExplicitSelectedColors() {
@@ -772,7 +1159,9 @@
             }
 
             const preset = savedPresets[index];
-            colorChips.forEach(chip => {
+            preset.colors.forEach(color => addColorChip(color, false));
+
+            getAllColorChips().forEach(chip => {
                 const shouldSelect = preset.colors.includes(chip.dataset.color);
                 chip.classList.toggle('selected', shouldSelect);
             });
@@ -847,14 +1236,43 @@
         function startMicrophone() {
             stopAudio();
             
-            navigator.mediaDevices.getUserMedia({ audio: true })
+            navigator.mediaDevices.getUserMedia({ audio: buildAudioInputConstraints() })
                 .then(stream => {
+                    activeStream = stream;
                     document.getElementById('audioInfo').style.display = 'block';
-                    document.getElementById('audioName').textContent = 'Microphone Input';
+                    const selectedOption = audioInputSelect.options[audioInputSelect.selectedIndex];
+                    const sourceName = selectedOption && selectedOption.text
+                        ? selectedOption.text
+                        : 'Microphone Input';
+                    document.getElementById('audioName').textContent = sourceName;
                     setupAudioContext(stream);
+                    refreshAudioInputDevices(true);
                     startBeatDetection();
                 })
                 .catch(err => {
+                    if (activeInputDeviceId) {
+                        navigator.mediaDevices.getUserMedia({
+                            audio: {
+                                echoCancellation: false,
+                                noiseSuppression: false,
+                                autoGainControl: false,
+                                channelCount: 1
+                            }
+                        })
+                            .then(stream => {
+                                activeStream = stream;
+                                document.getElementById('audioInfo').style.display = 'block';
+                                document.getElementById('audioName').textContent = 'Microphone Input (fallback device)';
+                                setupAudioContext(stream);
+                                refreshAudioInputDevices(true);
+                                startBeatDetection();
+                            })
+                            .catch(fallbackError => {
+                                alert('Microphone access denied: ' + fallbackError.message);
+                            });
+                        return;
+                    }
+
                     alert('Microphone access denied: ' + err.message);
                 });
         }
@@ -870,6 +1288,7 @@
             } else {
                 source = audioContext.createMediaElementSource(input);
                 source.connect(audioContext.destination);
+                activeStream = null;
             }
             
             source.connect(analyser);
@@ -881,6 +1300,8 @@
         
         function startBeatDetection() {
             isDetecting = true;
+            previousBassAverage = 0;
+            bassHistory.length = 0;
             document.getElementById('autoDot').classList.add('active');
             document.getElementById('autoStatus').textContent = 'Auto: Active';
             detectBeat();
@@ -903,13 +1324,37 @@
             }
             
             const bassAverage = bassSum / bassEnd;
+
+            const priorHistory = bassHistory.slice(0, -1);
+            bassHistory.push(bassAverage);
+            if (bassHistory.length > BASS_HISTORY_SIZE) {
+                bassHistory.shift();
+            }
+
+            let adaptiveThreshold = bassAverage + 999;
+            if (priorHistory.length > 8) {
+                const historyMean = priorHistory.reduce((sum, value) => sum + value, 0) / priorHistory.length;
+                const variance = priorHistory.reduce((sum, value) => {
+                    const diff = value - historyMean;
+                    return sum + (diff * diff);
+                }, 0) / priorHistory.length;
+                const historyStd = Math.sqrt(Math.max(variance, 0));
+
+                const thresholdMultiplier = 2.4 - (detectorSensitivity * 0.018);
+                const thresholdOffset = 18 - (detectorSensitivity * 0.08);
+                adaptiveThreshold = historyMean + (historyStd * thresholdMultiplier) + thresholdOffset;
+            }
+
+            const isRising = bassAverage > previousBassAverage + 2;
             
             // Detect beat if bass exceeds threshold and cooldown has passed
             const now = Date.now();
-            if (bassAverage > beatThreshold && (now - lastBeatTime) > beatCooldown) {
+            if (bassAverage > adaptiveThreshold && isRising && (now - lastBeatTime) > beatCooldown) {
                 triggerBeat();
                 lastBeatTime = now;
             }
+
+            previousBassAverage = bassAverage;
             
             animationId = requestAnimationFrame(detectBeat);
         }
@@ -970,6 +1415,11 @@
                 source.disconnect();
                 source = null;
             }
+
+            if (activeStream) {
+                activeStream.getTracks().forEach(track => track.stop());
+                activeStream = null;
+            }
             
             if (audioContext) {
                 audioContext.close();
@@ -984,13 +1434,15 @@
         }
         
         function updateSensitivity(value, label) {
-            beatThreshold = 100 - value;
-            const displayLabel = label || `Custom (${value})`;
+            detectorSensitivity = parseInt(value, 10);
+            const displayLabel = label || getSensitivityLabel(value);
             document.getElementById('sensitivityValue').textContent = displayLabel;
 
             sensitivityButtons.forEach(button => {
                 button.classList.toggle('active', button.dataset.value === String(value));
             });
+
+            saveAutoSettings();
         }
         
         function updateCooldown(value) {
@@ -1000,6 +1452,8 @@
             cooldownButtons.forEach(button => {
                 button.classList.toggle('active', button.dataset.value === String(value));
             });
+
+            saveAutoSettings();
         }
 
         function startShow() {
@@ -1024,11 +1478,13 @@
             document.querySelectorAll('.mode-btn')[1].classList.add('active');
         }
 
+        updateSensitivity(50, 'Average (Recommended)');
+        updateCooldown(250);
+        loadAutoSettings();
+        refreshAudioInputDevices(true);
         loadPresetsFromStorage();
         renderPresetOptions();
         renderPresetPreview(getExplicitSelectedColors());
-        updateSensitivity(50, 'Average (Recommended)');
-        updateCooldown(250);
     </script>
 </body>
 </html>
