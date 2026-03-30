@@ -630,6 +630,8 @@
                     </div>
                     
                     <button class="btn btn-success" id="micBtn" onclick="startMicrophone()">🎤 Use Microphone</button>
+
+                    <button class="btn btn-primary" id="startBtn" onclick="restartLastInput()" disabled>▶ Start Again</button>
                     
                     <button class="btn btn-danger" id="stopBtn" onclick="stopAudio()" disabled>⏹ Stop</button>
                 </div>
@@ -645,11 +647,12 @@
                 <div class="setting-item">
                     <label>Sensitivity: <span id="sensitivityValue">Average (Recommended)</span></label>
                     <div class="sensitivity-buttons" id="sensitivityButtons">
-                        <button type="button" class="sensitivity-btn" data-label="Low" data-value="30">Low</button>
-                        <button type="button" class="sensitivity-btn" data-label="Average (Recommended)" data-value="50">Average (Recommended)</button>
-                        <button type="button" class="sensitivity-btn" data-label="Max" data-value="100">Max</button>
+                        <button type="button" class="sensitivity-btn" data-label="Low" data-value="50">Low</button>
+                        <button type="button" class="sensitivity-btn" data-label="Average (Recommended)" data-value="80">Average (Recommended)</button>
+                        <button type="button" class="sensitivity-btn" data-label="Max" data-value="130">Max</button>
+                        <button type="button" class="sensitivity-btn" data-label="Ultra" data-value="170">Ultra</button>
                     </div>
-                    <small>Average is recommended for most songs</small>
+                    <small>Use Max or Ultra for quieter inputs and live vocals</small>
                 </div>
                 
                 <div class="setting-item">
@@ -743,13 +746,16 @@
         let audioElement;
         let animationId;
         let activeStream = null;
+        let lastInputMode = '';
+        let lastAudioUrl = '';
+        let lastAudioName = '';
         let isDetecting = false;
         let lastBeatTime = 0;
         let beatCooldown = 250;
-        let detectorSensitivity = 50;
+        let detectorSensitivity = 80;
         let previousBassAverage = 0;
         const bassHistory = [];
-        const BASS_HISTORY_SIZE = 45;
+        const BASS_HISTORY_SIZE = 30;
         const themeToggleBtn = document.getElementById('themeToggle');
         const THEME_STORAGE_KEY = 'dhaaraControlTheme';
         const PRESET_STORAGE_KEY = 'dhaaraBeatColorPresets';
@@ -1215,10 +1221,31 @@
             const file = e.target.files[0];
             if (file) {
                 stopAudio();
+                if (lastAudioUrl && lastAudioUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(lastAudioUrl);
+                }
                 const url = URL.createObjectURL(file);
+                lastInputMode = 'file';
+                lastAudioUrl = url;
+                lastAudioName = file.name;
                 loadAudio(url, file.name);
             }
         });
+
+        function restartLastInput() {
+            if (lastInputMode === 'mic') {
+                startMicrophone();
+                return;
+            }
+
+            if (lastInputMode === 'file' && lastAudioUrl) {
+                stopAudio();
+                loadAudio(lastAudioUrl, lastAudioName || 'Audio File');
+                return;
+            }
+
+            alert('Choose microphone or load an audio file first.');
+        }
         
         function loadAudio(url, name) {
             audioElement = new Audio(url);
@@ -1235,6 +1262,7 @@
         
         function startMicrophone() {
             stopAudio();
+            lastInputMode = 'mic';
             
             navigator.mediaDevices.getUserMedia({ audio: buildAudioInputConstraints() })
                 .then(stream => {
@@ -1296,6 +1324,7 @@
             
             document.getElementById('stopBtn').disabled = false;
             document.getElementById('micBtn').disabled = true;
+            document.getElementById('startBtn').disabled = true;
         }
         
         function startBeatDetection() {
@@ -1315,15 +1344,22 @@
             // Visualizer
             drawVisualizer();
             
-            // Beat detection - focusing on bass frequencies (0-100Hz range)
+            // Beat detection - analyze bass + mid frequencies (0-500Hz range) for better song detection
             let bassSum = 0;
-            const bassEnd = Math.floor(dataArray.length * 0.1); // First 10% of frequencies
+            const bassEnd = Math.floor(dataArray.length * 0.3); // First 30% of frequencies (bass + mids)
             
             for (let i = 0; i < bassEnd; i++) {
                 bassSum += dataArray[i];
             }
             
             const bassAverage = bassSum / bassEnd;
+            
+            // Also calculate overall energy for transient detection (vocals, claps, cymbals)
+            let totalEnergy = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                totalEnergy += dataArray[i];
+            }
+            const overallAverage = totalEnergy / dataArray.length;
 
             const priorHistory = bassHistory.slice(0, -1);
             bassHistory.push(bassAverage);
@@ -1331,7 +1367,7 @@
                 bassHistory.shift();
             }
 
-            let adaptiveThreshold = bassAverage + 99;
+            let adaptiveThreshold = bassAverage + 999;
             if (priorHistory.length > 8) {
                 const historyMean = priorHistory.reduce((sum, value) => sum + value, 0) / priorHistory.length;
                 const variance = priorHistory.reduce((sum, value) => {
@@ -1340,16 +1376,19 @@
                 }, 0) / priorHistory.length;
                 const historyStd = Math.sqrt(Math.max(variance, 0));
 
-                const thresholdMultiplier = 2.4 - (detectorSensitivity * 0.018);
-                const thresholdOffset = 18 - (detectorSensitivity * 0.08);
+                const thresholdMultiplier = Math.max(0.2, 1.45 - (detectorSensitivity * 0.007));
+                const thresholdOffset = Math.max(-4, 5 - (detectorSensitivity * 0.03));
                 adaptiveThreshold = historyMean + (historyStd * thresholdMultiplier) + thresholdOffset;
             }
 
-            const isRising = bassAverage > previousBassAverage + 2;
+            const isRising = bassAverage > previousBassAverage + 0.5;
+            const isEnergySpike =
+                overallAverage > (bassAverage * 0.65) ||
+                bassAverage > (adaptiveThreshold * 0.92); // Aggressive transient detector for vocals/claps
             
-            // Detect beat if bass exceeds threshold and cooldown has passed
+            // Detect beat if bass exceeds threshold OR energy spikes (better for songs/live audio)
             const now = Date.now();
-            if (bassAverage > adaptiveThreshold && isRising && (now - lastBeatTime) > beatCooldown) {
+            if (((bassAverage > adaptiveThreshold && isRising) || isEnergySpike) && (now - lastBeatTime) > beatCooldown) {
                 triggerBeat();
                 lastBeatTime = now;
             }
@@ -1429,6 +1468,7 @@
             document.getElementById('audioInfo').style.display = 'none';
             document.getElementById('stopBtn').disabled = true;
             document.getElementById('micBtn').disabled = false;
+            document.getElementById('startBtn').disabled = !lastInputMode;
             document.getElementById('autoDot').classList.remove('active');
             document.getElementById('autoStatus').textContent = 'Auto: Off';
         }
@@ -1478,8 +1518,8 @@
             document.querySelectorAll('.mode-btn')[1].classList.add('active');
         }
 
-        updateSensitivity(50, 'Average (Recommended)');
-        updateCooldown(250);
+        updateSensitivity(80, 'Average (Recommended)');
+        updateCooldown(120);
         loadAutoSettings();
         refreshAudioInputDevices(true);
         loadPresetsFromStorage();
