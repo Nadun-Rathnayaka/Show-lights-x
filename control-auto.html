@@ -1331,7 +1331,7 @@
                 bassHistory.shift();
             }
 
-            let adaptiveThreshold = bassAverage + 999;
+            let adaptiveThreshold = bassAverage + 99;
             if (priorHistory.length > 8) {
                 const historyMean = priorHistory.reduce((sum, value) => sum + value, 0) / priorHistory.length;
                 const variance = priorHistory.reduce((sum, value) => {
